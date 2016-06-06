@@ -1,0 +1,85 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0"></meta>
+  <style type="text/css">svg { position:relative; } </style>
+  <script type="text/javascript">
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+function blinkBackground(frame) {
+  var e = document.getElementsByTagName("body")[0];
+  e.style.background = "rgb(255, " + (255 - frame) + ", 255)";
+}
+
+function zoomElements(frame) {
+  var svgs = document.getElementsByTagName("img");
+  for (var i = 0; i < svgs.length; ++i) {
+    svgs[i].style = "width:" + (400 + (frame + i*frame)) + "px;"
+      + "left:" + (-frame) + "px;"
+      + "top:" + (-frame) + "px";
+  }
+}
+
+window.onload = function() {
+  var urls = {
+    "tiger": "https://upload.wikimedia.org/wikipedia/commons/f/fd/Ghostscript_Tiger.svg",
+    "chalkboard": "https://testdrive-archive.azurewebsites.net/performance/chalkboard/Images/Chalkboard.svg",
+  };
+  var args = window.location.search.split(",");
+  var url = urls["tiger"];
+  if (args.length > 1 && args[1] in urls)
+    url = urls[args[1]];
+
+  args = args[0];
+  var imageCount = 1;
+  var printLog = false;
+  var newFrame = blinkBackground;
+  for (var a in args) {
+    if (args[a] == "d")
+      imageCount++;
+    else if (args[a] == "l")
+      printLog = true;
+    else if (args[a] == "z")
+      newFrame = zoomElements;
+  }
+
+  addImages(url, imageCount);
+  startAnim(printLog, newFrame);
+}
+
+function addImages(url, imageCount) {
+  var e = document.getElementsByTagName("body")[0];
+
+  for (var i = 0; i < imageCount; ++i) {
+    var img = document.createElement("img");
+    img.src = url;
+    img.style = "width: 49%";
+    e.appendChild(img);
+  }
+}
+
+function startAnim(printLog, newFrame) {
+  var frame = 0;
+  var start = new Date();
+  function anim() {
+    if (frame == 60) {
+      if (printLog) {
+        var end = new Date();
+        var fps = Math.floor(1000 * frame / (end - start));
+        console.log("JS FPS: " + fps);
+        start = end;
+      }
+      frame = 0;
+    }
+    frame++;
+    window.requestAnimationFrame(anim);
+    newFrame(frame);
+  }
+  anim();
+}
+  </script>
+</head>
+<body>
+</body>
+</html>
