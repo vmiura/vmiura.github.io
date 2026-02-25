@@ -83,8 +83,8 @@ function init() {
   // Set div size to 200px by 200px
   var layer_size = 200; 
   
-  // Provide a default layer count of 50 if the query string is empty
-  var layer_count = qs['layer_count'] ? parseInt(qs['layer_count']) : 50;
+  // Provide a default layer count of 100 if the query string is empty
+  var layer_count = qs['layer_count'] ? parseInt(qs['layer_count']) : 100;
   var visible_layers = qs['visible_layers'] ? parseInt(qs['visible_layers']) : -1;
 
   for (var i = 0; i < layer_count; i ++) {
