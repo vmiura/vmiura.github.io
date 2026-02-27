@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+<head>
+<meta name="viewport" content="width=device-width, minimum-scale=1.0">
+
+<style>
+body {
+  margin: 0;
+  padding: 10px;
+  background-color: #f5f5f5;
+}
+
+.quad {
+  float: left;
+  background: blue;
+  
+  /* Set default opacity for all divs */
+  opacity: 0.1; 
+  
+  /* Divs are 200px wide. A negative margin of -170px means 
+    the next div will start 30px away from the left/top edge, 
+    creating the exact 30px overlapping spacing you requested.
+  */
+  margin-right: -170px;
+  margin-bottom: -170px;
+  
+  /* Added a subtle border so you can visually see the overlaps */
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-sizing: border-box;
+  
+  will-change: transform, opacity;
+}
+
+.quad > p {
+  font-family: 'Georgia', serif;
+  font-size: 24px; /* Increased font size for the larger 200px boxes */
+  font-weight: bold;
+  text-align: center;
+  color: black;
+  margin-top: 85px; /* Roughly center the text vertically */
+}
+
+.padding_quad {
+  float: left;
+  margin: 2px;
+}
+
+/* Updated opacity range to 0.25 - 0.75 */
+@keyframes opacity_keyframes {
+  0%   { opacity: 0.25; }
+  50%  { opacity: 0.75; }
+  100% { opacity: 0.25; }
+}
+
+</style>
+</head>
+<!-- Left the bench.js script reference intact per your baseline -->
+<script type="text/javascript" src="bench.js"></script>
+<script type="text/javascript">
+
+var qs = (function(a) {
+  if (a == "") return {};
+  var b = {};
+  for (var i = 0; i < a.length; ++i)
+  {
+    var p=a[i].split('=', 2);
+    if (p.length == 1)
+      b[p[0]] = "";
+    else
+      b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+  }
+  return b;
+})(window.location.search.substr(1).split('&'));
+
+function init() {
+  var body = document.getElementById('body');
+  
+  // Set div size to 200px by 200px
+  var layer_size = 200; 
+  
+  // Provide a default layer count of 200 if the query string is empty
+  var layer_count = qs['layer_count'] ? parseInt(qs['layer_count']) : 200;
+  var visible_layers = qs['visible_layers'] ? parseInt(qs['visible_layers']) : -1;
+
+  for (var i = 0; i < layer_count; i ++) {
+    if (i == visible_layers) {
+      var paddingDiv = body.appendChild(document.createElement('div'));
+      paddingDiv.className = 'padding_quad';
+      paddingDiv.style.width = '100%';
+      paddingDiv.style.height = (window.innerHeight * 2) + 'px';
+    }
+
+    var div = body.appendChild(document.createElement('div'));
+    div.id = 'myDiv' + i;
+    div.className = 'quad';
+    div.style.width = layer_size + 'px';
+    div.style.height = layer_size + 'px';
+    
+    // Assign a random pastel background color
+    div.style.backgroundColor = "hsl(" + Math.floor(Math.random() * 360) + ", 70%, 80%)";
+    
+    var number = div.appendChild(document.createElement('p'));
+    number.textContent = i + 1;
+  }
+
+  var animatedDiv = document.getElementById("myDiv0");
+  if (animatedDiv) {
+    animatedDiv.style.animation = "opacity_keyframes 1s infinite";
+    
+    // Make the animating div fill the entire viewport
+    // and bring it to the front
+    animatedDiv.style.position = "fixed";
+    animatedDiv.style.top = "0";
+    animatedDiv.style.left = "0";
+    animatedDiv.style.width = "100vw";
+    animatedDiv.style.height = "100vh";
+    animatedDiv.style.margin = "0"; // Remove the negative overlapping margin
+    animatedDiv.style.zIndex = "10";
+  }
+}
+
+// call init once the document is fully loaded
+window.addEventListener('load', init, false);
+
+</script>
+<body id="body"></body>
+</html>
