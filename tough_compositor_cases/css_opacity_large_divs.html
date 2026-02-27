@@ -111,16 +111,10 @@ function init() {
   var animatedDiv = document.getElementById("myDiv0");
   if (animatedDiv) {
     animatedDiv.style.animation = "opacity_keyframes 1s infinite";
-    
-    // Make the animating div fill the entire viewport
-    // and bring it to the front
-    animatedDiv.style.position = "fixed";
-    animatedDiv.style.top = "0";
-    animatedDiv.style.left = "0";
-    animatedDiv.style.width = "100vw";
-    animatedDiv.style.height = "100vh";
-    animatedDiv.style.margin = "0"; // Remove the negative overlapping margin
-    animatedDiv.style.zIndex = "10";
+
+    // Bring the animated div to the front. Otherwise, due to the overlapping 
+    // nature of the grid, it gets completely buried by div #2, #3, etc.
+    animatedDiv.style.position = "relative";
   }
 }
 
